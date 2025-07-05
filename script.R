@@ -19,9 +19,6 @@ str(df)
 # Summary statistics
 summary(df)
 
-# Clean column names (optional)
-names(df) <- tolower(names(df))
-
 # -------------------------------
 #  Total number of passengers
 # -------------------------------
