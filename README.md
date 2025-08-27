@@ -1,75 +1,74 @@
-# 🛳️ Titanic EDA Project in R
+# Titanic Survival Prediction with Logistic Regression
 
-This is a beginner-friendly Exploratory Data Analysis (EDA) project using R, based on the classic **Titanic dataset**.
+## 📌 Project Overview  
+This project predicts passenger survival on the **Titanic** using a **Logistic Regression** model.  
+Dataset sourced from [Kaggle's Titanic: Machine Learning from Disaster](https://www.kaggle.com/c/titanic).  
 
-The goal was to understand survival patterns on the Titanic based on **class, sex, and age** using basic R functions and visualizations.
-
----
-
-## 📦 Dataset
-
-Used the built-in `Titanic` dataset in R — a pre-aggregated table of:
-
-- **Class** (1st, 2nd, 3rd, Crew)  
-- **Sex** (Male/Female)  
-- **Age** (Child/Adult)  
-- **Survived** (Yes/No)  
-- **Freq** (How many passengers fit that profile)
-
-The dataset has **32 observations**, each representing a group of passengers.
+The goal was to explore the dataset, engineer meaningful features, and build a predictive model to estimate survival probabilities.  
 
 ---
 
-## 🧠 What I Did
-
-- Converted the table to a `data.frame`
-- Performed group-wise summarizations using `dplyr`
-- Visualized survival patterns using `ggplot2`
-- Exported a clean `.csv` of the processed data
+## ⚙️ Tools & Technologies  
+- **Language**: R  
+- **Libraries**: `tidyverse`, `caret`, `ggplot2`  
 
 ---
 
-## 📊 Key Insights
+## 🔍 Process & Methodology  
+1. **Data Preparation**  
+   - Cleaned missing values and encoded categorical variables.  
+   - Standardized numerical features.  
+   - Split dataset into training & testing sets.  
 
-- **Females** had a much higher survival rate than males
-- **1st Class** passengers survived significantly more than 3rd Class
-- **Children** had better survival odds than adults, especially among females
-- The survival rate varied **heavily by both class and gender**
+2. **Exploratory Data Analysis (EDA)**  
+   - Visualized survival rates across gender, passenger class, and age groups.  
+   - Key findings:  
+     - Women had significantly higher survival rates.  
+     - Passengers in **1st class** had much higher chances of survival.  
 
----
+3. **Model Building: Logistic Regression**  
+   - Trained a logistic regression classifier.  
+   - Interpreted coefficients to understand feature importance.  
 
-## 🛠️ Tools Used
-
-- `R`, `Posit Cloud`
-- `dplyr` for data wrangling
-- `ggplot2` for visualizations
-- `tidyr` for reshaping (pivoting)
-- Exported final results as `titanic_summary.csv`
-
----
-
-## 🧾 Files
-
-- `titanic_eda.R` → The main script file
-- `titanic_summary.csv` → Final output dataset
-- `survival_by_class_gender.png` → Bar plot of survival proportions
-- `child_vs_adult_survival.png` → Proportional survival by age group
+4. **Model Evaluation**  
+   - Used a confusion matrix and classification report.  
+   - Computed **Accuracy, Precision, Recall, and F1 Score**.  
 
 ---
 
-## 🎯 Next Steps
+## 📊 Results  
 
-- Reproduce this on the **Kaggle Titanic dataset** for more in-depth analysis
-- Try building an interactive **Shiny app** to visualize filters
-- Add a simple logistic regression model
+| Metric       | Score |
+|--------------|-------|
+| **Accuracy** | 0.82  |
+| **Precision** | 0.78 |
+| **Recall**    | 0.75 |
+| **F1 Score**  | 0.76 |
 
----
-
-## 📬 Contact
-
-Project by **Bilal**  
-Feel free to connect on [Instagram](https://instagram.com/itsali.bilal) or [X](https://x.com/itsali_bilal)
+✅ The logistic regression model achieved **82% accuracy**, with balanced precision and recall.  
 
 ---
 
-> This was my first full R project — small but solid. More coming soon 🚀
+## 📌 Key Insights  
+- **Gender (Sex)** and **Passenger Class (Pclass)** were the strongest predictors of survival.  
+- Age also influenced survival, with **children having higher chances**.  
+- Logistic Regression provided interpretable coefficients, showing the weight of each feature.  
+
+---
+
+## 📂 Dataset  
+👉 [Titanic: Machine Learning from Disaster (Kaggle)](https://www.kaggle.com/c/titanic)  
+
+---
+
+## 🚀 Future Work  
+- Compare Logistic Regression with **Random Forest, XGBoost, and Neural Networks**.  
+- Perform advanced feature engineering (family size, ticket grouping).  
+- Apply cross-validation and hyperparameter tuning for optimization.  
+
+---
+
+## 👨‍💻 Author  
+**Bilal Ali** – Student & Data Enthusiast  
+- 📍 Passionate about Data Science & AI  
+- 🔗 [LinkedIn](#) | [GitHub](#)
