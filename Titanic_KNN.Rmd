@@ -1,0 +1,193 @@
+---
+title: "Titanic Dataset"
+author: "Bilal Ali"
+date: "2025-08-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Library section 
+library(tibble)
+library(dplyr)
+```
+
+##Introduction
+This is KNN model of Titanic Dataset downloaded from Kaggle, to predict the survival rate of passengers based on their Class, Sex, Age etc. 
+
+```{r}
+titanic <- read.csv("Titanic-Dataset.csv", stringsAsFactors = TRUE)
+```
+
+```{r}
+head(titanic)
+```
+
+```{r}
+titanic_tib <- as_tibble(titanic)
+head(titanic_tib)
+```
+
+> C = Cherbourg, Q = Queenstown, S = Southampton
+
+**feature selection**
+
+```{r}
+#merge SibSp and Parch to FamilySize
+titanic_clean <- titanic_tib %>%
+  mutate(FamilySize = SibSp + Parch + 1) #+1 including the individual himself
+  
+```
+
+```{r}
+#dropping Names, passengerId, Ticket, Cabin, SibSp, Parch
+titanic_new <- titanic_clean %>% 
+  select(-Name, -PassengerId, -Ticket, -Cabin, -SibSp, -Parch)
+glimpse(titanic_new)
+```
+
+#Handling missing Values in Age
+
+```{r}
+# Count total missing values
+sum(is.na(titanic_new))
+```
+```{r}
+# See how many NAs per column
+colSums(is.na(titanic_new))
+```
+> Only the variable Age has 177 missing values
+
+```{r}
+# Fill Age with median
+titanic_new$Age[is.na(titanic_new$Age)] <- median(titanic_new$Age, na.rm = TRUE)
+```
+
+```{r}
+# Count total missing values
+colSums(is.na(titanic_new))
+```
+#Encoding
+
+```{r}
+titanic_new$Sex <- ifelse(titanic_new$Sex == "male", 0, 1)
+```
+
+>male = 0, female = 1.
+
+```{r}
+# Survival rate by Embarked
+
+titanic %>%
+  group_by(Embarked) %>%
+  summarise(SurvivalRate = mean(Survived),
+            Count = n())
+
+```
+
+```{r}
+#Logistic Regression
+log_reg <- glm(Survived ~ Pclass + Sex + Age + Fare + FamilySize + Embarked,
+               data = titanic_new,
+               family = binomial)
+summary(log_reg)
+```
+> emabarked has huge std error hence not reliable. 
+> The intercept is basically the log-odds of survival when all predictors are 0.
+> Being female increases the survival chance by 2.7
+> Large family also reduces survival chance.
+> High Fare slightly increases survival chance.
+> children are more lkely to survive than old people. 
+> Being from third class reduces chance of survival. 
+
+```{r}
+exp(coef(log_reg))
+```
+##fitting on the full dataset only tells you relationships, not predictive power. Using train-test split simulates real-world predictions.
+
+```{r}
+library(caTools)
+set.seed(123)
+#split the data 70/30
+split <- sample.split(Y = titanic_new$Survived, SplitRatio = 0.70)
+```
+
+
+```{r}
+train_data  <- titanic_new[split, ]
+test_data  <- titanic_new[!split, ]
+```
+
+```{r}
+#Logistic Regression
+log_reg <- glm(Survived ~ Pclass + Sex + Age + Fare + FamilySize + Embarked,
+               data = train_data,
+               family = binomial)
+summary(log_reg)
+```
+
+```{r}
+test_data$prob <- predict(log_reg, test_data, type = "response")
+```
+
+```{r}
+test_data$pred <- ifelse(test_data$prob > 0.5, 1, 0) # threshold = 0.5
+```
+
+
+```{r}
+#confusion matrix
+table(test_data$pred, test_data$Survived)
+```
+##Accuracy = 78.73%
+##Precision = 75%
+##Recall = 67%
+##F1 Score = 70.7%
+
+```{r}
+library(pROC)
+# Create the ROC object
+roc_curve <- roc(response = test_data$Survived, predictor = test_data$pred)
+# Plot the ROC curve
+plot(roc_curve, main = "ROC Curve", col = "blue", lwd = 2)
+```
+
+```{r}
+# Add the AUC value to the plot
+auc_value <- auc(roc_curve)
+print(auc_value)
+```
+> 76.53% Area is Under the curve (good enough)
+
+```{r}
+library(dplyr)
+
+survival_rates <- train_data %>%
+    group_by(Pclass) %>%
+    summarise(survival_rate = mean(Survived))
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(survival_rates, aes(x = Pclass, y = survival_rate, fill = survival_rate))+
+  geom_col(aes(fill = survival_rate), alpha = 0.7, width = 0.8)+
+  labs(title = "Survival Rate by Passenger Class",
+         x = "Passenger Class",
+         y = "Survival Rate")+
+  theme(
+        plot.title = element_text(family = "serif",
+                                  face = "bold",
+                                  size = 18,
+                                  color = "#2c3e50",
+                                  hjust = 0.5)
+    )
+```
+
+
+
+
+
